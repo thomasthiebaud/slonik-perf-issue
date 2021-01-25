@@ -1,0 +1,28 @@
+version: "3.9"
+services:
+  database:
+    image: postgres:12
+    env_file: .env
+    volumes:
+      - db-data:/var/lib/postgresql/data:delegated
+    healthcheck:
+      test: pg_isready -U test_user -d test_database
+      interval: 1s
+      timeout: 10s
+      retries: 3
+      start_period: 0s
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.ncc
+    depends_on:
+      database:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      POSTGRES_HOST: database
+      NODE_ENV: test
+      USE_NCC: "true"
+
+volumes:
+  db-data:

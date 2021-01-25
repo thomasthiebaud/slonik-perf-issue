@@ -1,0 +1,24 @@
+{
+  "name": "slonik-perf-issue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test:ncc": "ncc build ./index.js -s -m && docker-compose -f docker-compose.ncc.yaml up --build --remove-orphans --exit-code-from test --abort-on-container-exit",
+    "posttest:ncc": "docker-compose -f docker-compose.ncc.yaml stop",
+    "test:classic": "docker-compose up --build --remove-orphans --exit-code-from test --abort-on-container-exit",
+    "posttest:classic": "docker-compose stop",
+    "test": "npm run test:classic && npm run test:ncc",
+    "posttest": "npm run posttest:classic && npm run posttest:ncc"
+  },
+  "author": "Thomas Thiebaud",
+  "license": "MIT",
+  "dependencies": {
+    "pg": "^8.5.1",
+    "slonik": "^23.5.4"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.27.0",
+    "rollup": "^2.38.0"
+  }
+}
