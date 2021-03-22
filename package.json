@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:ncc": "ncc build ./index.js -s -m && docker-compose -f docker-compose.ncc.yaml up --build --remove-orphans --exit-code-from test --abort-on-container-exit",
+    "test:ncc": "docker-compose -f docker-compose.ncc.yaml up --build --remove-orphans --exit-code-from test --abort-on-container-exit",
     "posttest:ncc": "docker-compose -f docker-compose.ncc.yaml stop",
     "test:classic": "docker-compose up --build --remove-orphans --exit-code-from test --abort-on-container-exit",
     "posttest:classic": "docker-compose stop",
@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "pg": "^8.5.1",
+    "pg-native": "^3.0.0",
     "slonik": "^23.5.4"
   },
   "devDependencies": {

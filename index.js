@@ -1,5 +1,6 @@
 const { createPool, sql } = require("slonik");
 const { Pool } = require("pg");
+const Client = require("pg-native");
 
 const POSTGRES_USER = process.env.POSTGRES_USER || "test_user";
 const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || "test_password";
@@ -28,6 +29,7 @@ async function run() {
   };
   const pgPool = new Pool(dbConfig);
   const slonikPool = createPool(toConnectionString(dbConfig));
+  const pgNativeClient = Client();
 
   await slonikPool.query(sql`
     CREATE TABLE IF NOT EXISTS profile (
@@ -55,6 +57,18 @@ async function run() {
   console.time(`${NCC_PREFIX}slonik - end`);
   await slonikPool.end();
   console.timeEnd(`${NCC_PREFIX}slonik - end`);
+
+  pgNativeClient.connectSync(toConnectionString(dbConfig));
+  console.time(`${NCC_PREFIX}pg-native - query`);
+  pgNativeClient.querySync(
+    "INSERT INTO profile(name, photo_url) VALUES($1::text, $2::text) RETURNING id;",
+    ["slonikPool", null]
+  );
+  console.timeEnd(`${NCC_PREFIX}pg-native - query`);
+  console.time(`${NCC_PREFIX}pg-native - end`);
+  pgNativeClient.end(() => {
+    console.timeEnd(`${NCC_PREFIX}pg-native - end`);
+  });
 }
 
 run();
